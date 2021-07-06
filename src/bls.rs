@@ -7,14 +7,15 @@ use bls12_381::Gt;
 use bls12_381::Scalar;
 use rand::RngCore;
 
-pub struct BLSKeyPair {
-    pub prikey: Scalar,
-    pub pubkey: G2Projective,
-}
-
 pub type BLSSignature = G1Projective;
 pub type BLSPrivateKey = Scalar;
 pub type BLSPublicKey = G2Projective;
+
+#[derive(Copy, Clone)]
+pub struct BLSKeyPair {
+    pub prikey: BLSPrivateKey,
+    pub pubkey: BLSPublicKey,
+}
 
 pub fn bls_gen_key_pair(rng: &mut impl RngCore) -> BLSKeyPair {
     let prikey = utils::gen_rand_scalar(rng);

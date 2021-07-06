@@ -28,6 +28,6 @@ branch="master"
 default-features=false
 
 [dependencies.epid]
-git = "https://github.com/akakou/epid/"
-branch = "main"
-
+# git = "https://github.com/akakou/epid/"
+# branch = "main"
+path = "../epid/"
