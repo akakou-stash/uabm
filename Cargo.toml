@@ -1,0 +1,33 @@
+[package]
+name = "uabm"
+version = "0.1.0"
+authors = ["akakou <akakou571@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+group = "0.10.0"
+sha2 = "0.9.3"
+byteorder = "1.4.3"
+rand = "0.8.3"
+
+[dependencies.bls12_381]
+git="https://github.com/akakou/bls12_381/"
+branch="features/gt_supports"
+default-features=false
+features=["alloc", "group", "pairings"]
+
+[dependencies.ff]
+version = "0.10"
+default-features = false
+
+[dependencies.slice_as_array]
+git = "https://github.com/akakou/slice_as_array"
+branch="master"
+default-features=false
+
+[dependencies.epid]
+# git = "https://github.com/akakou/epid/"
+# branch = "main"
+path = "../epid/"
