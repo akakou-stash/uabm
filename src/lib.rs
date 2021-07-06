@@ -3,6 +3,7 @@ extern crate slice_as_array;
 
 use crate::bls::bls_gen_key_pair;
 use crate::bls::bls_sign;
+use crate::bls::bls_verify;
 use crate::bls::BLSKeyPair;
 use crate::bls::BLSPublicKey;
 use crate::bls::BLSSignature;
@@ -75,6 +76,31 @@ impl Verifier {
             ),
         }
     }
+
+    pub fn verify(&self, signature: &Signature, msg: &[u8]) -> Result<(), ()> {
+        let is_valid_msg = bls_verify(
+            &signature.bls_signature,
+            &signature.certificate.req.public_key,
+            msg,
+        );
+
+        let is_valid_certificate = bls_verify(
+            &signature.certificate.veirier_signature,
+            &self.bls_keypair.pubkey,
+            &signature.certificate.req.public_key.to_bytes().as_ref(),
+        );
+
+        if is_valid_certificate && is_valid_msg {
+            Ok(())
+        } else {
+            Err(())
+        }
+    }
+}
+
+pub struct Signature {
+    pub certificate: MemberCertificate,
+    pub bls_signature: BLSSignature,
 }
 
 pub struct Member {
@@ -87,6 +113,14 @@ impl Member {
         Self {
             certificate,
             key_pair,
+        }
+    }
+    fn sign(&self, msg: &[u8]) -> Signature {
+        let bls_signature = bls_sign(&self.key_pair.prikey, msg);
+
+        Signature {
+            bls_signature,
+            certificate: self.certificate.clone(),
         }
     }
 }
@@ -155,4 +189,14 @@ fn test_auth() {
 
     let resp = verifier.register_member(&req);
     let member = process.generate_member(resp);
+    let signature = member.sign(&vec![2, 4, 5]);
+
+    verifier.verify(&signature, &vec![2, 4, 5]).unwrap();
+
+    match verifier.verify(&signature, &vec![2, 4, 4]) {
+        Ok(_) => {
+            assert!(false);
+        }
+        Err(_) => {}
+    }
 }
